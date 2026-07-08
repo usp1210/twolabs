@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reorganized Concordance — Pooled by Read Type</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#10201d;
+    --paper:#eef1ee;
+    --panel:#ffffff;
+    --line:#c8d0cb;
+    --teal:#0d6e63;
+    --teal-dim:#0d6e6320;
+    --amber:#a8631f;
+    --amber-dim:#a8631f18;
+    --red:#9c3b32;
+    --red-dim:#9c3b3214;
+    --blue:#1a4d8f;
+    --muted:#5c6a64;
+    --mono:'IBM Plex Mono', monospace;
+    --sans:'IBM Plex Sans', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    padding:32px 20px 80px;
+  }
+  .wrap{max-width:1120px;margin:0 auto;}
+
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:18px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  h1{font-size:26px;margin:4px 0 0;font-weight:700;letter-spacing:-0.01em;}
+  .meta-tag{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:3px;
+    background:var(--panel);
+  }
+  .intro{
+    font-size:13px;
+    color:var(--muted);
+    max-width:760px;
+    margin:14px 0 28px;
+    line-height:1.6;
+  }
+  .intro code{
+    font-family:var(--mono);
+    background:#e3e7e4;
+    padding:1px 5px;
+    border-radius:3px;
+    font-size:12px;
+    color:var(--ink);
+  }
+
+  /* ---------- Inputs ---------- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width: 780px){ .grid2{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:20px 22px;
+  }
+  .card h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin:0 0 4px;
+  }
+  .card .sub{font-size:12.5px;color:var(--muted);margin:0 0 16px;}
+
+  table.input-tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;}
+  table.input-tbl th{
+    text-align:center;font-weight:600;font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);padding:6px 4px;border-bottom:1px solid var(--line);
+  }
+  table.input-tbl td{text-align:center;padding:8px 4px;border-bottom:1px solid #e3e7e4;}
+  table.input-tbl td.rowlabel{text-align:left;font-family:var(--sans);font-size:12.5px;color:var(--ink);font-weight:500;}
+  input.cell{
+    width:56px;text-align:center;font-family:var(--mono);font-size:13px;
+    padding:5px 2px;border:1px solid var(--line);border-radius:4px;background:#fbfbfa;color:var(--ink);
+  }
+  input.cell.agree{border-color:var(--teal);background:var(--teal-dim);font-weight:600;}
+  input.cell:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  input.cell.total[readonly]{
+    background:#eceeec;
+    color:var(--muted);
+    border-color:var(--line);
+    cursor:not-allowed;
+  }
+  td.computed{font-family:var(--mono);color:var(--red);font-weight:600;}
+  .disagree-note{
+    font-family:var(--sans);
+    font-weight:400;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:2px;
+    white-space:nowrap;
+  }
+  .disagree-note b{color:var(--red);font-weight:700;}
+  .warn{font-size:12px;color:var(--red);font-family:var(--mono);margin-top:8px;min-height:14px;}
+
+  /* ---------- Section headers ---------- */
+  .section{margin-top:34px;}
+  .section > h2{
+    font-size:15px;text-transform:uppercase;letter-spacing:.08em;
+    border-bottom:1px solid var(--ink);padding-bottom:8px;margin-bottom:16px;
+  }
+  .section > p.note{font-size:12.5px;color:var(--muted);margin:-8px 0 16px;line-height:1.6;}
+
+  /* ---------- Summary table ---------- */
+  table.summary-tbl{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  table.summary-tbl th{
+    text-align:left;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding:12px 18px;
+    border-bottom:1px solid var(--line);
+    background:#f6f7f5;
+  }
+  table.summary-tbl td{
+    padding:14px 18px;
+    border-bottom:1px solid #edf0ee;
+    font-size:14px;
+  }
+  table.summary-tbl tr:last-child td{border-bottom:none;}
+  table.summary-tbl tr.total-row td{
+    border-top:2px solid var(--ink);
+    background:#f6f7f5;
+    font-weight:700;
+  }
+  table.summary-tbl td.pool-name{font-weight:600;}
+  table.summary-tbl td.num{font-family:var(--mono);}
+  table.summary-tbl td.metric{font-family:var(--mono);}
+  table.summary-tbl td.metric .m-label{font-weight:700;}
+  table.summary-tbl td.metric.npa .m-label{color:var(--blue);}
+  table.summary-tbl td.metric.ppa .m-label{color:var(--teal);}
+  table.summary-tbl td.metric.opa .m-label{color:var(--ink);}
+
+  /* ---------- JHU-as-reference: crosstab + stat cards ---------- */
+  .ref-grid{
+    display:grid;
+    grid-template-columns:minmax(260px, 340px) 1fr 1fr;
+    gap:18px;
+    align-items:stretch;
+    margin-bottom:16px;
+  }
+  @media (max-width: 900px){ .ref-grid{grid-template-columns:1fr;} }
+
+  .crosstab-card, .stat-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:18px 20px;
+  }
+  .crosstab-card h3, .stat-card h3{
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin:0 0 14px;
+    color:var(--muted);
+  }
+
+  table.crosstab{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13px;}
+  table.crosstab th{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:11.5px;
+    color:var(--muted);
+    text-align:center;
+    padding:6px 8px;
+  }
+  table.crosstab th.ct-corner{text-align:left;color:var(--ink);}
+  table.crosstab th.ct-group{border-bottom:1px solid var(--line);}
+  table.crosstab tbody th{
+    text-align:left;
+    font-family:var(--sans);
+    font-weight:600;
+    color:var(--ink);
+    padding-right:10px;
+  }
+  table.crosstab td{
+    text-align:center;
+    padding:10px 14px;
+    font-weight:700;
+    border:1px solid var(--line);
+  }
+  table.crosstab td.ct-agree{background:var(--teal-dim);color:var(--teal);}
+  table.crosstab td.ct-dis{background:var(--red-dim);color:var(--red);}
+  table.crosstab td.ct-total{background:#f6f7f5;color:var(--muted);font-weight:600;}
+
+  .stat-card{display:flex;flex-direction:column;}
+  .stat-big{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--ink);line-height:1;}
+  .stat-tag{
+    display:inline-block;
+    align-self:flex-start;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:999px;
+    margin:10px 0 12px;
+  }
+  .stat-tag.good{background:var(--teal-dim);color:var(--teal);}
+  .stat-tag.mid{background:var(--amber-dim);color:var(--amber);}
+  .stat-tag.flat{background:#e3e7e4;color:var(--muted);}
+  .stat-detail{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--muted);
+    line-height:1.7;
+  }
+  .stat-detail b{color:var(--ink);}
+
+  p.explain{
+    font-size:13px;
+    color:var(--ink);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:16px 20px;
+    line-height:1.7;
+  }
+
+  footer{
+    margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand">Inter-site validation · pooled read-type agreement</div>
+      <h1>Reorganized Concordance — Pooled by Read Type</h1>
+    </div>
+    <div class="meta-tag" id="totalN">80 reads · 40 samples</div>
+  </header>
+
+  <p class="intro">
+    Instead of scoring agreement only against each site's <em>own</em> samples, this pools
+    every read that came out <strong>negative</strong> (or <strong>positive</strong>) for a given site —
+    its own primary calls plus its confirmatory reads on the other site's samples — and checks how often
+    the paired, independent read agrees. Edit the four confirmation counts below; the summary and results update live.
+  </p>
+
+  <div class="grid2">
+
+    <!-- JHU INPUT -->
+    <div class="card">
+      <h2>JHU samples</h2>
+      <p class="sub">JHU's call, cross-checked by Paris</p>
+      <table class="input-tbl">
+        <thead>
+          <tr><th style="text-align:left">JHU called</th><th>Total</th><th>Confirmed same by Paris</th><th>Disagreed</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rowlabel">Negative (a0)</td>
+            <td><input class="cell total" type="number" readonly id="a0" value="10"></td>
+            <td><input class="cell agree" type="number" min="0" max="10" id="a0b0" value="7"></td>
+            <td class="computed"><span id="a0b1">3</span><div class="disagree-note">→ called <b>positive</b> by Paris</div></td>
+          </tr>
+          <tr>
+            <td class="rowlabel">Positive (a1)</td>
+            <td><input class="cell total" type="number" readonly id="a1" value="10"></td>
+            <td><input class="cell agree" type="number" min="0" max="10" id="a1b1" value="8"></td>
+            <td class="computed"><span id="a1b0">2</span><div class="disagree-note">→ called <b>negative</b> by Paris</div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warn" id="warnA"></div>
+    </div>
+
+    <!-- PARIS-SACLAY INPUT -->
+    <div class="card">
+      <h2>Paris samples</h2>
+      <p class="sub">Paris's call, cross-checked by JHU</p>
+      <table class="input-tbl">
+        <thead>
+          <tr><th style="text-align:left">Paris called</th><th>Total</th><th>Confirmed same by JHU</th><th>Disagreed</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rowlabel">Negative (b0)</td>
+            <td><input class="cell total" type="number" readonly id="b0" value="10"></td>
+            <td><input class="cell agree" type="number" min="0" max="10" id="b0a0" value="9"></td>
+            <td class="computed"><span id="b0a1">1</span><div class="disagree-note">→ called <b>positive</b> by JHU</div></td>
+          </tr>
+          <tr>
+            <td class="rowlabel">Positive (b1)</td>
+            <td><input class="cell total" type="number" readonly id="b1" value="10"></td>
+            <td><input class="cell agree" type="number" min="0" max="10" id="b1a1" value="6"></td>
+            <td class="computed"><span id="b1a0">4</span><div class="disagree-note">→ called <b>negative</b> by JHU</div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warn" id="warnB"></div>
+    </div>
+
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section">
+    <h2>Summary — reorganized pools</h2>
+    <table class="summary-tbl">
+      <thead>
+        <tr><th>Pool</th><th>Size</th><th>Agree</th><th>Metric</th></tr>
+      </thead>
+      <tbody id="summaryRows"></tbody>
+    </table>
+  </div>
+
+  <!-- OVERALL SUMMARY -->
+  <div class="section">
+    <h2>Overall Summary</h2>
+    <p class="note">
+      Pooling all 40 specimens by what JHU called (reference) against what Paris called (comparator)
+      gives the 2×2 table below. Cohen's κ quantifies agreement beyond chance; McNemar's test checks
+      whether disagreements run symmetrically in both directions or whether one site is systematically
+      more likely to call positive.
+    </p>
+
+    <div class="ref-grid">
+      <div class="crosstab-card">
+        <h3>2×2 table</h3>
+        <table class="crosstab">
+          <thead>
+            <tr><th class="ct-corner"></th><th colspan="2" class="ct-group">Paris called</th><th></th></tr>
+            <tr><th class="ct-corner">JHU called</th><th>Negative</th><th>Positive</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Negative</th><td class="ct-agree" id="ct_a"></td><td class="ct-dis" id="ct_b"></td><td class="ct-total" id="ct_row1"></td></tr>
+            <tr><th>Positive</th><td class="ct-dis" id="ct_c"></td><td class="ct-agree" id="ct_d"></td><td class="ct-total" id="ct_row2"></td></tr>
+            <tr><th>Total</th><td class="ct-total" id="ct_col1"></td><td class="ct-total" id="ct_col2"></td><td class="ct-total" id="ct_n"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <h3>Cohen's κ</h3>
+        <div class="stat-big" id="kappaVal"></div>
+        <div class="stat-tag" id="kappaTag"></div>
+        <div class="stat-detail" id="kappaDetail"></div>
+      </div>
+
+      <div class="stat-card">
+        <h3>McNemar's test</h3>
+        <div class="stat-big" id="mcnemarVal"></div>
+        <div class="stat-tag" id="mcnemarTag"></div>
+        <div class="stat-detail" id="mcnemarDetail"></div>
+      </div>
+    </div>
+
+    <p class="explain" id="explainText"></p>
+  </div>
+
+  <footer>
+    OPA = overall percent agreement · PPA = positive percent agreement · NPA = negative percent agreement<br>
+    Confidence intervals are exact (Clopper–Pearson, 95%), computed in-browser via the regularized incomplete beta function.<br>
+    Note: Overall Percent Agreement reflects concordance across all 40 samples directly — it does not change depending on whose "negative"/"positive" pool it's viewed from.
+  </footer>
+
+</div>
+
+<script>
+/* ---------------- Exact (Clopper-Pearson) binomial CI ---------------- */
+function lgamma(x){
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+             771.32342877765313, -176.61502916214059, 12.507343278686905,
+             -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if(x < 0.5){ return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x); }
+  x -= 1;
+  let a = c[0];
+  const t = x + g + 0.5;
+  for(let i = 1; i < g + 2; i++){ a += c[i] / (x + i); }
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+function betacf(x, a, b){
+  const MAXIT = 200, EPS = 3e-9, FPMIN = 1e-300;
+  const qab = a + b, qap = a + 1, qam = a - 1;
+  let c = 1, d = 1 - qab * x / qap;
+  if(Math.abs(d) < FPMIN) d = FPMIN;
+  d = 1 / d;
+  let h = d;
+  for(let m = 1; m <= MAXIT; m++){
+    const m2 = 2 * m;
+    let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+    d = 1 + aa * d; if(Math.abs(d) < FPMIN) d = FPMIN;
+    c = 1 + aa / c; if(Math.abs(c) < FPMIN) c = FPMIN;
+    d = 1 / d;
+    h *= d * c;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+    d = 1 + aa * d; if(Math.abs(d) < FPMIN) d = FPMIN;
+    c = 1 + aa / c; if(Math.abs(c) < FPMIN) c = FPMIN;
+    d = 1 / d;
+    const del = d * c;
+    h *= del;
+    if(Math.abs(del - 1) < EPS) break;
+  }
+  return h;
+}
+function ibeta(x, a, b){
+  if(x <= 0) return 0;
+  if(x >= 1) return 1;
+  const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  if(x < (a + 1) / (a + b + 2)){ return bt * betacf(x, a, b) / a; }
+  else { return 1 - bt * betacf(1 - x, b, a) / b; }
+}
+function ibetaInv(p, a, b){
+  let lo = 0, hi = 1;
+  for(let i = 0; i < 100; i++){
+    const mid = (lo + hi) / 2;
+    if(ibeta(mid, a, b) < p) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+function clopperPearson(x, n, alpha = 0.05){
+  if(n === 0) return [NaN, NaN];
+  const lower = (x === 0) ? 0 : ibetaInv(alpha / 2, x, n - x + 1);
+  const upper = (x === n) ? 1 : ibetaInv(1 - alpha / 2, x + 1, n - x);
+  return [lower, upper];
+}
+
+/* ---------------- Cohen's kappa / McNemar helpers ---------------- */
+function erf(x){
+  const sign = x < 0 ? -1 : 1; x = Math.abs(x);
+  const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+  const t = 1 / (1 + p * x);
+  const y = 1 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * Math.exp(-x*x);
+  return sign * y;
+}
+function normCDF(x){ return 0.5 * (1 + erf(x / Math.SQRT2)); }
+function chi2PvalueDf1(x){ return x <= 0 ? 1 : 2 * (1 - normCDF(Math.sqrt(x))); }
+function logChoose(n, k){ return lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1); }
+function exactMcNemarP(b, c){
+  const n = b + c;
+  if(n === 0) return 1;
+  const k = Math.min(b, c);
+  let p = 0;
+  for(let i = 0; i <= k; i++){ p += Math.exp(logChoose(n, i) - n * Math.log(2)); }
+  return Math.min(2 * p, 1);
+}
+function kappaLabel(k){
+  if(k < 0)    return ['Poor', 'flat'];
+  if(k <= 0.20) return ['Slight', 'flat'];
+  if(k <= 0.40) return ['Fair', 'mid'];
+  if(k <= 0.60) return ['Moderate', 'mid'];
+  if(k <= 0.80) return ['Substantial', 'good'];
+  return ['Almost perfect', 'good'];
+}
+
+/* ---------------- App logic ---------------- */
+const ids = ['a0','a1','a0b0','a1b1','b0','b1','b0a0','b1a1'];
+ids.forEach(id => document.getElementById(id).addEventListener('input', render));
+
+function val(id){ return Math.max(0, parseInt(document.getElementById(id).value, 10) || 0); }
+function pct(x){ return isFinite(x) ? (x * 100).toFixed(1) + '%' : '—'; }
+
+function summaryRow(poolName, size, agree, metricLabel, metricCls, rowCls){
+  const p = size > 0 ? agree / size : NaN;
+  const [lo, hi] = size > 0 ? clopperPearson(agree, size) : [NaN, NaN];
+  return `<tr class="${rowCls || ''}">
+    <td class="pool-name">${poolName}</td>
+    <td class="num">${size}</td>
+    <td class="num">${agree}</td>
+    <td class="metric ${metricCls}"><span class="m-label">${metricLabel} = ${pct(p)}</span> (95% CI ${pct(lo)}–${pct(hi)})</td>
+  </tr>`;
+}
+
+function render(){
+  const a0 = val('a0'), a1 = val('a1');
+  const a0b0 = Math.min(val('a0b0'), a0), a1b1 = Math.min(val('a1b1'), a1);
+  const b0 = val('b0'), b1 = val('b1');
+  const b0a0 = Math.min(val('b0a0'), b0), b1a1 = Math.min(val('b1a1'), b1);
+
+  document.getElementById('a0b0').value = a0b0;
+  document.getElementById('a1b1').value = a1b1;
+  document.getElementById('b0a0').value = b0a0;
+  document.getElementById('b1a1').value = b1a1;
+
+  const a0b1 = a0 - a0b0;   // JHU neg, Paris pos
+  const a1b0 = a1 - a1b1;   // JHU pos, Paris neg
+  const b0a1 = b0 - b0a0;   // Paris neg, JHU pos
+  const b1a0 = b1 - b1a1;   // Paris pos, JHU neg
+
+  document.getElementById('a0b1').textContent = a0b1;
+  document.getElementById('a1b0').textContent = a1b0;
+  document.getElementById('b0a1').textContent = b0a1;
+  document.getElementById('b1a0').textContent = b1a0;
+
+  document.getElementById('warnA').textContent =
+    (val('a0b0') > a0 || val('a1b1') > a1) ? 'Confirmed count cannot exceed total — clamped.' : '';
+  document.getElementById('warnB').textContent =
+    (val('b0a0') > b0 || val('b1a1') > b1) ? 'Confirmed count cannot exceed total — clamped.' : '';
+
+  const totalSamples = a0 + a1 + b0 + b1;
+  document.getElementById('totalN').textContent = (totalSamples * 2) + ' reads · ' + totalSamples + ' samples';
+
+  /* ---- Reorganized pools ---- */
+  // JHU-negative pool: own negatives (a0) + JHU's confirmatory-negative reads on Paris samples (b0a0 + b1a0)
+  const poolA_neg = a0 + b0a0 + b1a0;
+  const agreeA_neg = a0b0 + b0a0;
+  // JHU-positive pool: own positives (a1) + JHU's confirmatory-positive reads on Paris samples (b0a1 + b1a1)
+  const poolA_pos = a1 + b0a1 + b1a1;
+  const agreeA_pos = a1b1 + b1a1;
+
+  // Paris-negative pool: own negatives (b0) + Paris's confirmatory-negative reads on JHU samples (a0b0 + a1b0)
+  const poolB_neg = b0 + a0b0 + a1b0;
+  const agreeB_neg = b0a0 + a0b0;
+  // Paris-positive pool: own positives (b1) + Paris's confirmatory-positive reads on JHU samples (a0b1 + a1b1)
+  const poolB_pos = b1 + a0b1 + a1b1;
+  const agreeB_pos = b1a1 + a1b1;
+
+  const totalAgree = a0b0 + a1b1 + b0a0 + b1a1;
+  const totalReads = a0 + a1 + b0 + b1;
+
+  document.getElementById('summaryRows').innerHTML =
+    summaryRow('Negative by JHU', poolA_neg, agreeA_neg, 'NPA', 'npa') +
+    summaryRow('Positive by JHU', poolA_pos, agreeA_pos, 'PPA', 'ppa') +
+    summaryRow('Negative by Paris', poolB_neg, agreeB_neg, 'NPA', 'npa') +
+    summaryRow('Positive by Paris', poolB_pos, agreeB_pos, 'PPA', 'ppa') +
+    summaryRow('Overall Percent Agreement', totalReads, totalAgree, 'OPA', 'opa', 'total-row');
+
+  /* ---- JHU as reference: 2x2 table, Cohen's kappa, McNemar's test ---- */
+  const ctA = a0b0 + b0a0;   // JHU neg, Paris neg
+  const ctB = a0b1 + b1a0;   // JHU neg, Paris pos
+  const ctC = a1b0 + b0a1;   // JHU pos, Paris neg
+  const ctD = a1b1 + b1a1;   // JHU pos, Paris pos
+  const N = ctA + ctB + ctC + ctD;
+  const row1 = ctA + ctB, row2 = ctC + ctD;   // JHU neg total, JHU pos total
+  const col1 = ctA + ctC, col2 = ctB + ctD;   // Paris neg total, Paris pos total
+
+  document.getElementById('ct_a').textContent = ctA;
+  document.getElementById('ct_b').textContent = ctB;
+  document.getElementById('ct_c').textContent = ctC;
+  document.getElementById('ct_d').textContent = ctD;
+  document.getElementById('ct_row1').textContent = row1;
+  document.getElementById('ct_row2').textContent = row2;
+  document.getElementById('ct_col1').textContent = col1;
+  document.getElementById('ct_col2').textContent = col2;
+  document.getElementById('ct_n').textContent = N;
+
+  // Cohen's kappa
+  const Po = N > 0 ? (ctA + ctD) / N : NaN;
+  const Pe = N > 0 ? (row1 * col1 + row2 * col2) / (N * N) : NaN;
+  const kappa = (1 - Pe) !== 0 ? (Po - Pe) / (1 - Pe) : NaN;
+  const se0 = (N > 0 && Pe < 1) ? Math.sqrt(Pe / (N * (1 - Pe))) : NaN;
+  const zKappa = se0 > 0 ? kappa / se0 : NaN;
+  const pKappa = isFinite(zKappa) ? 2 * (1 - normCDF(Math.abs(zKappa))) : NaN;
+  const [kLabel, kTagCls] = isFinite(kappa) ? kappaLabel(kappa) : ['—', 'flat'];
+
+  document.getElementById('kappaVal').textContent = isFinite(kappa) ? kappa.toFixed(3) : '—';
+  document.getElementById('kappaTag').textContent = kLabel;
+  document.getElementById('kappaTag').className = 'stat-tag ' + kTagCls;
+  document.getElementById('kappaDetail').innerHTML =
+    `P<sub>o</sub> (observed) = <b>${pct(Po)}</b><br>` +
+    `P<sub>e</sub> (chance) = <b>${pct(Pe)}</b><br>` +
+    `z = <b>${isFinite(zKappa) ? zKappa.toFixed(2) : '—'}</b>, p ${isFinite(pKappa) ? (pKappa < 0.001 ? '&lt; 0.001' : '= ' + pKappa.toFixed(4)) : '—'}<br>` +
+    `H₀: κ = 0 (agreement no better than chance)`;
+
+  // McNemar's test (on the discordant cells b = ctB, c = ctC)
+  const mcN = ctB + ctC;
+  const chi2cc = mcN > 0 ? Math.pow(Math.abs(ctB - ctC) - 1, 2) / mcN : 0;
+  const pMcCC = chi2PvalueDf1(chi2cc);
+  const pMcExact = exactMcNemarP(ctB, ctC);
+  const mcSig = pMcExact < 0.05;
+
+  document.getElementById('mcnemarVal').textContent = 'χ² = ' + chi2cc.toFixed(2);
+  document.getElementById('mcnemarTag').textContent = mcSig ? 'Significant asymmetry' : 'No significant asymmetry';
+  document.getElementById('mcnemarTag').className = 'stat-tag ' + (mcSig ? 'mid' : 'flat');
+  document.getElementById('mcnemarDetail').innerHTML =
+    `Discordant pairs: JHU−/Paris+ = <b>${ctB}</b>, JHU+/Paris− = <b>${ctC}</b><br>` +
+    `p (continuity-corrected) = <b>${pMcCC < 0.001 ? '< 0.001' : pMcCC.toFixed(4)}</b><br>` +
+    `p (exact binomial) = <b>${pMcExact < 0.001 ? '< 0.001' : pMcExact.toFixed(4)}</b><br>` +
+    `H₀: disagreements split evenly between directions`;
+
+  // Plain-language explanation
+  document.getElementById('explainText').innerHTML =
+    `With JHU as the reference standard, JHU and Paris agree on <b>${ctA + ctD} of ${N}</b> specimens ` +
+    `(${pct(Po)} observed agreement), against an expected ${pct(Pe)} by chance alone. ` +
+    `This gives <b>Cohen's κ = ${isFinite(kappa) ? kappa.toFixed(3) : '—'}</b> ` +
+    `(z = ${isFinite(zKappa) ? zKappa.toFixed(2) : '—'}, p ${isFinite(pKappa) ? (pKappa < 0.001 ? '&lt; 0.001' : '= ' + pKappa.toFixed(4)) : '—'}) — ` +
+    `${isFinite(kappa) && pKappa < 0.05 ? 'a statistically significant, ' : ''}<b>${kLabel.toLowerCase()}</b> level of agreement beyond chance ` +
+    `(Landis &amp; Koch scale). ` +
+    `McNemar's test compares the <b>${ctB}</b> specimens Paris called positive that JHU called negative against the ` +
+    `<b>${ctC}</b> specimens Paris called negative that JHU called positive` +
+    (mcSig
+      ? `; this difference <b>is statistically significant</b> (p ${pMcExact < 0.001 ? '&lt; 0.001' : '= ' + pMcExact.toFixed(4)}), suggesting Paris is systematically more likely to call ${ctB > ctC ? 'positive' : 'negative'} than JHU on discordant specimens, beyond what random disagreement would produce.`
+      : `; this difference <b>is not statistically significant</b> (p = ${pMcExact.toFixed(4)}), so there isn't strong evidence that Paris is systematically biased toward more positive or negative calls relative to JHU — with ${mcN} discordant pairs, a ${ctB}-vs-${ctC} split is plausibly due to chance.`
+    );
+
+}
+
+render();
+</script>
+</body>
+</html>
